@@ -49,15 +49,15 @@ begin
 					end if;
 
 				when TRANS_START =>
-					RESULT <= "01";
-					if CNT_A = "1000" then
+					RESULT <= "10";
+					if CNT_B = "0100" then
 						state <= AWAIT_NEXT;
-						RESULT <= "10";
+						RESULT <= "00";
 					end if;
 
 				when AWAIT_NEXT =>
 					RESULT <= "10";
-					if CNT_B = "1111" then
+					if CNT_B = "1110" then
 						state <= STORE_DIN;
 						RESULT <= "01";
 					end if;
@@ -74,7 +74,7 @@ begin
 
 				when AWAIT_STOP =>
 					RESULT <= "10";
-					if CNT_B = "1111" then
+					if CNT_B = "1110" then
 						state <= CHECK_STOP;
 					end if;
 

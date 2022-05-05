@@ -64,7 +64,7 @@ begin
 		if RST = '1' then
 			cnt_b <= "0000";
 		elsif rising_edge(CLK) then
-			if fsm_result = "00" or cnt_b = "1111" then
+			if fsm_result = "00" or cnt_b = "1110" then
 				cnt_b <= "0000";
 			elsif fsm_result(1) = '1' then
 				cnt_b <= cnt_b + 1;
