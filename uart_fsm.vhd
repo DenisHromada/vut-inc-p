@@ -22,10 +22,8 @@ port(
 	CLK   : in std_logic;
 	RST   : in std_logic;
 	--out
-	RESULT: out std_logic_vector(1 downto 0)
-);
-
-end entity UART_FSM;
+	RESULT: out std_logic_vector(1 downto 0) := "00" );
+end UART_FSM;
 
 
 
@@ -42,7 +40,6 @@ begin
 			if RST = '1' then --asynchroni reset
 				state <= AWAIT_START;
 			else
-				RESULT <= "00"; --latch prevent?
 				case state is
 				when AWAIT_START =>
 					RESULT <= "00";
@@ -64,7 +61,7 @@ begin
 
 				when STORE_DIN =>
 					RESULT <= "01";
-					if CNT_A = "1000" then
+					if CNT_A = "0111" then
 						state <= AWAIT_STOP;
 					else
 						state <= AWAIT_NEXT;
