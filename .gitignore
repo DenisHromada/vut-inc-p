@@ -1,0 +1,8 @@
+# ignore everything
+*
+
+#except my files
+!.gitignore
+!uart.vhd
+!uart_fsm.vhd
+!zprava.pdf
