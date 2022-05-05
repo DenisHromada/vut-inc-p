@@ -44,27 +44,32 @@ begin
 				when AWAIT_START =>
 					RESULT <= "00";
 					if DIN = '0' then
-					state <= TRANS_START;
+						state <= TRANS_START;
+						RESULT <= "01";
 					end if;
 
 				when TRANS_START =>
 					RESULT <= "01";
 					if CNT_A = "1000" then
 						state <= AWAIT_NEXT;
+						RESULT <= "10";
 					end if;
 
 				when AWAIT_NEXT =>
 					RESULT <= "10";
 					if CNT_B = "1111" then
 						state <= STORE_DIN;
+						RESULT <= "01";
 					end if;
 
 				when STORE_DIN =>
 					RESULT <= "01";
 					if CNT_A = "0111" then
 						state <= AWAIT_STOP;
+						RESULT <= "10";
 					else
 						state <= AWAIT_NEXT;
+						RESULT <= "10";
 					end if;
 
 				when AWAIT_STOP =>
@@ -77,8 +82,10 @@ begin
 					RESULT <= "00";
 					if DIN = '0' then
 						state <= AWAIT_START;
+						RESULT <= "00";
 					else
 						state <= STOP_PRESENT;
+						RESULT <= "11";
 					end if;
 
 				when STOP_PRESENT =>
