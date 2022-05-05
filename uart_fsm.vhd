@@ -67,7 +67,7 @@ begin
 					if CNT_A = "1000" then
 						state <= AWAIT_STOP;
 					else
-						state <=AWAIT_NEXT;
+						state <= AWAIT_NEXT;
 					end if;
 
 				when AWAIT_STOP =>
@@ -75,6 +75,7 @@ begin
 					if CNT_B = "1111" then
 						state <= CHECK_STOP;
 					end if;
+
 				when CHECK_STOP =>
 					RESULT <= "00";
 					if DIN = '0' then
@@ -82,10 +83,13 @@ begin
 					else
 						state <= STOP_PRESENT;
 					end if;
+
 				when STOP_PRESENT =>
 					RESULT <= "11";
 					state <= AWAIT_START;
+
 				when others => null;
+
 				end case;
 			end if;
 		end if;
