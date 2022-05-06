@@ -22,7 +22,7 @@ port(
 	CLK   : in std_logic;
 	RST   : in std_logic;
 	--out
-	RESULT: out std_logic_vector(1 downto 0) := "00" );
+	RESULT: out std_logic_vector(1 downto 0));
 end UART_FSM;
 
 
@@ -32,70 +32,91 @@ end UART_FSM;
 architecture behavioral of UART_FSM is
 type STATE_T is (AWAIT_START, TRANS_START, AWAIT_NEXT, STORE_DIN,
 					AWAIT_STOP, CHECK_STOP, STOP_PRESENT);
-signal state : STATE_T := AWAIT_START;
+signal cur_state : STATE_T := AWAIT_START;
+signal next_state : STATE_T := AWAIT_START;
 
 begin
-	process (CLK) begin
-		if rising_edge(CLK) then --only rising edge
-			if RST = '1' then --asynchroni reset
-				state <= AWAIT_START;
-			else
-				case state is
-				when AWAIT_START =>
-					RESULT <= "00";
-					if DIN = '0' then
-						state <= TRANS_START;
-						RESULT <= "01";
-					end if;
+	cur_state_logic: process (cur_state, DIN, CNT_A, CNT_B, RST) begin
+		if RST = '1' then
+			next_state <= AWAIT_START;
+		else
+			case cur_state is
+			when AWAIT_START =>
+				if DIN = '0' then
+					next_state <= TRANS_START;
+				end if;
 
-				when TRANS_START =>
-					RESULT <= "10";
-					if CNT_B = "0100" then
-						state <= AWAIT_NEXT;
-						RESULT <= "00";
-					end if;
+			when TRANS_START =>
+				if CNT_B = "0101" then
+					next_state <= AWAIT_NEXT;
+				end if;
 
-				when AWAIT_NEXT =>
-					RESULT <= "10";
-					if CNT_B = "1110" then
-						state <= STORE_DIN;
-						RESULT <= "01";
-					end if;
+			when AWAIT_NEXT =>
+				if CNT_B = "1110" then
+					next_state <= STORE_DIN;
+				end if;
 
-				when STORE_DIN =>
-					RESULT <= "01";
-					if CNT_A = "0111" then
-						state <= AWAIT_STOP;
-						RESULT <= "10";
-					else
-						state <= AWAIT_NEXT;
-						RESULT <= "10";
-					end if;
+			when STORE_DIN =>
+				if CNT_A = "0111" then
+					next_state <= AWAIT_STOP;
+				else
+					next_state <= AWAIT_NEXT;
+				end if;
 
-				when AWAIT_STOP =>
-					RESULT <= "10";
-					if CNT_B = "1110" then
-						state <= CHECK_STOP;
-					end if;
+			when AWAIT_STOP =>
+				if CNT_B = "1110" then
+					next_state <= CHECK_STOP;
+				end if;
 
-				when CHECK_STOP =>
-					RESULT <= "00";
-					if DIN = '0' then
-						state <= AWAIT_START;
-						RESULT <= "00";
-					else
-						state <= STOP_PRESENT;
-						RESULT <= "11";
-					end if;
+			when CHECK_STOP =>
+				if DIN = '1' then
+					next_state <= STOP_PRESENT;
+				else
+					next_state <= AWAIT_START;
+				end if;
 
-				when STOP_PRESENT =>
-					RESULT <= "11";
-					state <= AWAIT_START;
+			when STOP_PRESENT =>
+				next_state <= AWAIT_START;
 
-				when others => null;
-
-				end case;
-			end if;
+			when others => null;
+			end case;
 		end if;
+	end process;
+
+	next_state_logic: process(CLK) begin
+		if RST = '1' then
+			cur_state <= AWAIT_START;
+		elsif rising_edge(CLK) then
+			cur_state <= next_state;
+		end if;
+	end process;
+
+	output_logic: process(cur_state, DIN, CNT_A, CNT_B) begin
+		case cur_state is
+		when AWAIT_START =>
+			RESULT <= "00";
+
+		when TRANS_START =>
+			RESULT <= "10";
+			if CNT_B = "0101" then
+				RESULT <= "00";
+			end if;
+
+		when AWAIT_NEXT =>
+			RESULT <= "10";
+
+		when STORE_DIN =>
+			RESULT <= "01";
+
+		when AWAIT_STOP =>
+			RESULT <= "10";
+
+		when CHECK_STOP =>
+			RESULT <= "00";
+
+		when STOP_PRESENT =>
+			RESULT <= "11";
+		when others => null;
+		end case;
 	end process;
 end behavioral;
