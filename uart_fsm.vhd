@@ -17,7 +17,7 @@ entity UART_FSM is
 port(
 	--in
 	DIN   : in std_logic;
-	CNT_A : in std_logic_vector(3 downto 0);
+	CNT_A : in std_logic_vector(2 downto 0);
 	CNT_B : in std_logic_vector(3 downto 0);
 	CLK   : in std_logic;
 	RST   : in std_logic;
@@ -57,7 +57,7 @@ begin
 				end if;
 
 			when STORE_DIN =>
-				if CNT_A = "0111" then
+				if CNT_A = "111" then
 					next_state <= AWAIT_STOP;
 				else
 					next_state <= AWAIT_NEXT;

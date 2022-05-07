@@ -30,7 +30,7 @@ end UART_RX;
 -------------------------------------------------
 
 architecture behavioral of UART_RX is
-signal cnt_a      : std_logic_vector(3 downto 0) := "0000";
+signal cnt_a      : std_logic_vector(2 downto 0) := "000";
 signal cnt_b      : std_logic_vector(3 downto 0) := "0000";
 signal fsm_result : std_logic_vector(1 downto 0);
 signal d_out      : std_logic_vector(7 downto 0) := "00000000";
@@ -49,10 +49,10 @@ begin
 	p_cnt_a : process(CLK, RST)
 	begin
 		if RST = '1' then
-			cnt_a <= "0000";
+			cnt_a <= "000";
 		elsif rising_edge(CLK) then
-			if fsm_result = "00" or cnt_a(3) = '1' then
-				cnt_a <= "0000";
+			if fsm_result = "00" then
+				cnt_a <= "000";
 			elsif fsm_result(0) = '1' then
 				cnt_a <= cnt_a + 1;
 			end if;
