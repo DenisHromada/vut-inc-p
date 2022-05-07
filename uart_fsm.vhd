@@ -30,8 +30,7 @@ end UART_FSM;
 -------------------------------------------------
 
 architecture behavioral of UART_FSM is
-type STATE_T is (AWAIT_START, TRANS_START, AWAIT_NEXT, STORE_DIN,
-					AWAIT_STOP, CHECK_STOP, STOP_PRESENT);
+type STATE_T is (AWAIT_START, TRANS_START, AWAIT_NEXT, STORE_DIN, AWAIT_STOP);
 signal cur_state : STATE_T := AWAIT_START;
 signal next_state : STATE_T := AWAIT_START;
 
@@ -65,18 +64,8 @@ begin
 
 			when AWAIT_STOP =>
 				if CNT_B = "1110" then
-					next_state <= CHECK_STOP;
-				end if;
-
-			when CHECK_STOP =>
-				if DIN = '1' then
-					next_state <= STOP_PRESENT;
-				else
 					next_state <= AWAIT_START;
 				end if;
-
-			when STOP_PRESENT =>
-				next_state <= AWAIT_START;
 
 			when others => null;
 			end case;
@@ -110,12 +99,14 @@ begin
 
 		when AWAIT_STOP =>
 			RESULT <= "10";
+			if CNT_B = "1110" then
+				if DIN = '1' then
+					RESULT <= "11";
+				else
+					RESULT <= "00";
+				end if;
+			end if;
 
-		when CHECK_STOP =>
-			RESULT <= "00";
-
-		when STOP_PRESENT =>
-			RESULT <= "11";
 		when others => null;
 		end case;
 	end process;
