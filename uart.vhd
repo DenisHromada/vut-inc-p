@@ -83,14 +83,14 @@ begin
 			--DOUT_VLD <= '1' when (fsm_result = "11") else '0';
 			if fsm_result = "01" then
 				--my own bit shift
-				d_out(7) <= d_out(6);
-				d_out(6) <= d_out(5);
-				d_out(5) <= d_out(4);
-				d_out(4) <= d_out(3);
-				d_out(3) <= d_out(2);
-				d_out(2) <= d_out(1);
-				d_out(1) <= d_out(0);
-				d_out(0) <= DIN;
+				d_out(0) <= d_out(1);
+				d_out(1) <= d_out(2);
+				d_out(2) <= d_out(3);
+				d_out(3) <= d_out(4);
+				d_out(4) <= d_out(5);
+				d_out(5) <= d_out(6);
+				d_out(6) <= d_out(7);
+				d_out(7) <= DIN;
 			end if;
 			DOUT <= d_out;
 		end if;
